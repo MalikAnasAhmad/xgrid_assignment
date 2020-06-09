@@ -13,7 +13,7 @@ IPAddr = socket.gethostbyname(hostname)
 from source.logic.server_storage import *
 
 r = connect_redis()
-r.flushall()
+# r.flushall()
 # print(r)
 r.set("msg:hello", "Hello Redis!!!")
 msg = r.get("msg:hello")
@@ -26,20 +26,20 @@ score       = 56
 playerName  = "Player1"
 r.zadd(players, {playerName:score})
 
-score = int(time.time()*1000000)
+score = int(time.time())
 client_id = "1.1.1.1:2356"
 message = "hello"
 r.zadd("chat_log_plain", {"@"+client_id+":"+message:score})
 # time.sleep(1)sudo systemctl status redis
-score = int(time.time()*1000000)
+score = int(time.time())
 print(score)
 r.zadd("chat_log_plain", {"@"+client_id+":"+message+'b':score})
 # time.sleep(1)
-score = int(time.time()*1000000)
+score = int(time.time())
 print(score)
 r.zadd("chat_log_plain", {"@"+client_id+":"+message+'a':score})
 
-# print(int(time.time()*1000000))
+# print(int(time.time()))
 # print(r.lrange("chat_log_plain",{-100,-1}))
 
 
@@ -49,7 +49,7 @@ print("zscore = > ",r.zscore("chat_log_plain", "@"+client_id+":"+message))
 # logger.info(f"my_list: {r.lrange('my_list', 0, -1)}")
 
 
-Epoch = int(time.time()*1000000)
+Epoch = int(time.time())
 client_id = "1.1.1.1:2356"
 message = "hello"
 print('Epoch => ', Epoch)
@@ -58,7 +58,7 @@ data_1 = {'Epoch':Epoch, 'client_id' : client_id, 'message' :  message}
 # data = {"client_id" : client_id, "message" :  message}
 r.hmset("chat_log_plain_2", data_1)
 
-Epoch = int(time.time()*1000000)
+Epoch = int(time.time())
 print('Epoch => ', Epoch)
 data = {'Epoch':Epoch, 'client_id' : client_id, 'message' :  message}
 r.hmset("chat_log_plain_2", data)
@@ -106,4 +106,12 @@ print(dictA)
 print([ { 'user_id': x, 'time': y, 'message': z } for x, y, z in zip(list1, list3,list2) ])
 print(json.dumps([ { 'user_id': x, 'time': y, 'message': z } for x, y, z in zip(list1, list3,list2) ]))
 print(type(json.dumps([ { 'user_id': x, 'time': y, 'message': z } for x, y, z in zip(list1, list3,list2) ])))
+
+a=[]
+a.append('a')
+print(a)
+a.append('b')
+print(a)
+
+# print ('a\nb')
 

@@ -1,0 +1,1 @@
+kill $(cat /home/malikanasahmad/var/run/chat_client.pid)

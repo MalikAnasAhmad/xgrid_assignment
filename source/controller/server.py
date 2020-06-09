@@ -24,9 +24,9 @@ redis_username = Config.get('redis', 'username')
 redis_password = Config.get('redis', 'password')
 
 
-def chat_server():
-	# establishing the redis connection
-	r = connect_redis()
-	# should also flush the redis in real scenario or properly manage its initiation process
-	zmq_socket_server = start_server_zmq_publisher()
-	start_apis(r)
+# def chat_server():
+# establishing the redis connection
+r = connect_redis()
+# should also flush the redis in real scenario or properly manage its initiation process
+zmq_socket_server = start_server_zmq_publisher()
+start_apis(r, zmq_socket_server)

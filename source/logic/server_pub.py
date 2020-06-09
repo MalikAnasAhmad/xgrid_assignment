@@ -29,3 +29,8 @@ def start_server_zmq_publisher():
 	socket = context.socket(zmq.PUB)
 	socket.bind('tcp://' + server_zmq_host + ':' + server_zmq_port)
 	return socket
+
+
+def publish_on_message_broker(zmq_socket_server, message_to_be_published):
+	# if some one writes exit() the announce his exit
+	zmq_socket_server.send_string(message_to_be_published)
