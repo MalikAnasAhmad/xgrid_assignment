@@ -93,5 +93,17 @@ print(r.hget("message_storage",'1.1.1.1:12541591683025.487051'))
 print(r.hmget("message_storage",r.lrange("chat_ids",0,-1)))
 # print(r.keys())
 # print(r.mget(r.keys()))
+# print(r.hscan("message_storage",r.lrange("chat_ids",0,-1)))
+list1 = r.lrange("chat_ids",0,-1)
+list3 = [i.split('_', 1)[1] for i in list1]
+print("time_stamps => ", list3)
+list1 = [i.split('_', 1)[0] for i in list1]
+list2 = r.hmget("message_storage",r.lrange("chat_ids",0,-1))
+dictA = dict(zip(list1, list2))
 
+print(dictA)
+
+print([ { 'user_id': x, 'time': y, 'message': z } for x, y, z in zip(list1, list3,list2) ])
+print(json.dumps([ { 'user_id': x, 'time': y, 'message': z } for x, y, z in zip(list1, list3,list2) ]))
+print(type(json.dumps([ { 'user_id': x, 'time': y, 'message': z } for x, y, z in zip(list1, list3,list2) ])))
 
