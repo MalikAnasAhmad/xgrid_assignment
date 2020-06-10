@@ -9,6 +9,7 @@ Project_path = path.abspath(path.join(__file__, "../../.."))
 sys.path.insert(0, Project_path)
 
 from source.controller.client import *
+from source.controller.server import *
 
 def main(argv):
 	# project_path = path.abspath(path.join(__file__, "../../.."))
@@ -16,7 +17,7 @@ def main(argv):
 	flags = translate_command_line_arg(argv)
 	if flags[0]:
 		logging.info("Check 1 [starting server]\n\n")
-		# clean_document_store()
+		chat_server()
 	if flags[1]:
 		logging.info("Check 2 [starting client]\n\n")
 		chat_client()
