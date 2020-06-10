@@ -1,6 +1,7 @@
 import zmq
 import configparser
 import requests
+import logging
 import json
 import datetime
 import os.path as path
@@ -14,16 +15,38 @@ server_zmq_host = Config.get('zmq', 'host')
 server_zmq_port = Config.get('zmq', 'port')
 
 
+def ask_user_for_pointing_out_an_existing_user(client_id):
+	message = {"client_id": client_id, 'user_input': None}
+	prompt = "You are required to mention one id which has already joined the group chat : "
+	user_input = input(prompt)
+	message['user_input'] = user_input
+
+	server_url = 'http://' + server_api_host + ':' + server_api_port + '/' + 'verify_referral'
+	# query = json.dumps(message)#temp
+	query = message
+	response = requests.post(server_url, json=query)
+
+	if response.json()['approval'] == 'yes':
+		return True
+	else:
+		return False
+
+
 def join_server(client_id):
+	result=None
 	message = {"client_id": client_id}
 	server_url = 'http://' + server_api_host + ':' + server_api_port + '/' + 'join_chat'
 	query = message
 
 	response = requests.post(server_url, json=query)
 	response_json = response.json()
-	print('response_json in JOIN_SERVER FUNCTION', response_json)
-	result = response_json['available']
-	print('result =>', result)
+	approval = response_json['approval']
+	if approval == 'yes':
+		result=True
+	elif approval == 'conditional':
+		result = ask_user_for_pointing_out_an_existing_user(client_id)
+	elif approval == 'no':
+		result=False
 	return result
 
 
@@ -63,7 +86,7 @@ def subscribe_to_server(client_id):
 
 		message = socket.recv_string()#.recv_pyobj()
 		print(message)
-		first_word =client_id + " : " + "IS LEAVING THE GROUP CHAT GROUP"
-		second_word=message.split('\n', 1)[0]
+		first_word = client_id + " : " + "IS LEAVING THE GROUP CHAT GROUP"
+		second_word = message.split('\n', 1)[0]
 		if first_word == second_word:
 			break

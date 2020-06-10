@@ -1,1 +1,1 @@
-python3 /home/malikanasahmad/PycharmProjects/xgrid/source/main/main.py start_chat_client & echo $! > /home/malikanasahmad/var/run/chat_client.pid
+sudo python3 /home/malikanasahmad/PycharmProjects/xgrid/source/main/main.py start_chat_client & echo $! > /home/malikanasahmad/var/run/chat_client.pid

@@ -37,58 +37,58 @@ def join_group_chat(client_id, message, zmq_socket_server):
 	message_to_be_published = '\n\n' + client_id + ' has joined the group @ ' +\
 							  str(datetime.datetime.fromtimestamp(epoch_time))+ '\n\n'
 
-	publish_on_message_broker(zmq_socket_server, json.dumps(message_to_be_published))#temp
+	publish_on_message_broker(zmq_socket_server, message_to_be_published)#temp
 	# publish_on_message_broker(zmq_socket_server, message_to_be_published)
 
 
 def start_apis(r, zmq_socket_server):
 	server_api = Flask(__name__)
 
-	# @RE_API.route('/wo_id', methods=['POST'])
 	@server_api.route('/join_chat', methods=['POST'])
 	def join_chat():
-		print('H')
-		response_to_the_client = {"list_of_messages": None, 'available': None}
-		print('I')
+		response_to_the_client = {"approval": None}
 		try:
-			print('N')
-			print(request)
-			print('O')
-			# print(type(request))
-			# print('P')
-			# print(request)
-			# uery_input = {'wo_id': request.json.get('wo_id'), 'asset_id':
+			# query_input = {'wo_id': request.json.get('wo_id'), 'asset_id':
 			query_input = {'client_id': request.get_json()['client_id']}
-			print('J')
 			client_id = query_input['client_id']
-			print('K')
 			# check if the same id exist or not
 			# check if the number of subscribers are less than 100
 
 			# if len(list_of_client_ids) == 100 and client_id not in list_of_client_ids:
 			if len(list_of_client_ids) == 0:
-				print('\n\KJSHDKJSHDKSDHKJ\n\n')
-				print('L')
 				message = client_id + ' is the first person to join the group'
 				join_group_chat(client_id, message, zmq_socket_server)
-				print('M')
-				response_to_the_client['list_of_messages'] = []
-				response_to_the_client['available'] = True
-				print("response_to_the_client => ", response_to_the_client)
+				response_to_the_client['approval'] = 'yes'
 			elif len(list_of_client_ids) < 100 and client_id not in list_of_client_ids:
-				print('P')
-				message = client_id + ' has joined the group'
-				print('Q')
+				message = client_id + ' is requesting to join the group'
 				join_group_chat(client_id, message, zmq_socket_server)
-				print('R')
-				last_few_messages = get_last_few_messages_from_data_store(r, no_of_messages_to_be_sent_to_client)
-				print('S')
-				response_to_the_client['list_of_messages'] = last_few_messages
-				response_to_the_client['available'] = True
+				response_to_the_client['approval'] = 'conditional'
+			# check if he can mention any existing id
 			else:
-				response_to_the_client['list_of_messages'] = None  # empty list means that there are no messages, None
-				# will mean that this functionality is unavailable for you
-				response_to_the_client['available'] = False
+				response_to_the_client['approval'] = 'no'
+			return response_to_the_client
+		# return json.dumps(response_to_the_client)
+		except Exception as e:
+			logging.error(e)
+			logging.critical("Unexpected error:" + str(sys.exc_info()[0]))
+			content = {'status': 'internal server error'}
+			return json.dumps(content), 500
+
+	@server_api.route('/verify_referral', methods=['POST'])
+	def verify_referral():
+		response_to_the_client = {"approval": None}
+		try:
+			query_input = {'client_id': request.get_json()['client_id'],'user_input': request.get_json()['user_input']}
+			client_id = query_input['client_id']
+			user_input = query_input['user_input']
+			# check if the same id exist or not
+			# print('\n\n list_of_client_ids ==> ', list_of_client_ids)
+			if user_input in list_of_client_ids:
+				response_to_the_client['approval'] = 'yes'
+				message = client_id + ' has also joined the group'
+				join_group_chat(client_id, message, zmq_socket_server)
+			else:
+				response_to_the_client['approval'] = 'no'
 			return response_to_the_client
 			# return json.dumps(response_to_the_client)
 		except Exception as e:
@@ -159,6 +159,7 @@ def start_apis(r, zmq_socket_server):
 
 			client_id = query_input['client_id']
 			# remove the client_id from the list
+			print('list_of_client_ids =>',list_of_client_ids)
 			list_of_client_ids.remove(client_id)
 			response_to_the_client['left'] = True
 			return json.dumps(response_to_the_client)

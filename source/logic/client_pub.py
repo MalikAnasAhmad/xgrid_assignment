@@ -40,7 +40,8 @@ def scan_user_input_and_post_it_to_server_for_publishing(client_id):
 	message = {"client_id": client_id, 'user_input': None}
 	while True:
 		# user_input = input(client_id + " : ")#temp
-		prompt = client_id + " : "
+		# prompt = client_id + " : "
+		prompt = ''
 		user_input = input(prompt)
 		if user_input != 'exit()':
 			# print('\033[1A' + prompt + '\033[K')
